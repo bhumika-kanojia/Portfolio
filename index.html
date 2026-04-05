@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bhumika Kanojia | Portfolio</title>
+    <meta name="description"
+        content="Personal portfolio of Bhumika Kanojia, B.Tech CSE-AI Student & Aspiring Full Stack Developer.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Boxicons for icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Header & Navigation -->
+    <header class="header">
+        <a href="#" class="logo">Bhumi<span>.</span></a>
+        <nav class="navbar">
+            <a href="#hero" class="active">Home</a>
+            <a href="#about">About</a>
+            <a href="#skills">Skills</a>
+            <a href="#projects">Projects</a>
+            <a href="#education">Education</a>
+            <a href="#contact">Contact</a>
+        </nav>
+        <div class="theme-toggle">
+            <i class='bx bx-moon' id="theme-icon"></i>
+        </div>
+        <div class="menu-toggle">
+            <i class='bx bx-menu' id="menu-icon"></i>
+        </div>
+    </header>
+
+    <!-- Floating Background Shapes -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <span class="greeting">Hi there! 💖 I am</span>
+            <h1 class="name">Bhumika Kanojia</h1>
+            <h3 class="role">Aspiring <span>Full Stack Developer</span></h3>
+            <p class="tagline">Building smart & beautiful web experiences 💻✨</p>
+            <div class="btn-group">
+                <a href="#projects" class="btn btn-primary">View Projects</a>
+                <a href="#contact" class="btn btn-secondary">Contact Me</a>
+            </div>
+            <div class="social-links">
+                <a href="https://linkedin.com/in/" target="_blank"><i class='bx bxl-linkedin-square'></i></a>
+                <a href="https://github.com/bhumika23826" target="_blank"><i class='bx bxl-github'></i></a>
+            </div>
+        </div>
+        <div class="hero-img">
+            <div class="blob-wrapper">
+                <img src="avatar.png" id="avatar-img" alt="Bhumika Avatar">
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <h2 class="heading">About <span>Me</span> 🌸</h2>
+        <div class="about-content">
+            <div class="about-text">
+                <p>Hello! I'm an enthusiastic B.Tech CSE-AI student who loves blending creativity with logic. I
+                    specialize in building delightful, responsive, and functional web applications.</p>
+                <p>When I'm not coding, I enjoy exploring new design trends and continuously learning about full-stack
+                    technologies to push my limits. Welcome to my cozy corner of the internet!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section class="skills" id="skills">
+        <h2 class="heading">My <span>Skills</span> ✨</h2>
+        <div class="skills-container">
+            <div class="skill-box"><i class='bx bxl-html5'></i> <span>HTML5</span></div>
+            <div class="skill-box"><i class='bx bxl-css3'></i> <span>CSS3</span></div>
+            <div class="skill-box"><i class='bx bxl-javascript'></i> <span>JavaScript</span></div>
+            <div class="skill-box"><i class='bx bxl-react'></i> <span>React.js</span></div>
+            <div class="skill-box"><i class='bx bxl-python'></i> <span>Python</span></div>
+            <div class="skill-box"><i class='bx bx-data'></i> <span>SQL</span></div>
+            <div class="skill-box"><i class='bx bx-brain'></i> <span>AI / ML</span></div>
+            <div class="skill-box"><i class='bx bxl-git'></i> <span>Git</span></div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section class="projects" id="projects">
+        <h2 class="heading">Featured <span>Projects</span> 🚀</h2>
+        <div class="project-grid">
+
+            <div class="project-card">
+                <div class="project-info">
+                    <h3>Employee Management System</h3>
+                    <p>A comprehensive system built with React & Vite. Handled employee data, dynamic routing, and
+                        interactive dashboards.</p>
+                    <div class="tech-stack">
+                        <span>React</span><span>Vite</span><span>Tailwind</span>
+                    </div>
+                    <div class="links">
+                        <a href="#" class="project-btn">Live Link <i class='bx bx-link-external'></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-info">
+                    <h3>BERT Fake News Detection</h3>
+                    <p>An AI/ML project utilizing the robust BERT model to classify and detect fake news patterns from
+                        large datasets with high accuracy.</p>
+                    <div class="tech-stack">
+                        <span>Python</span><span>BERT</span><span>NLP</span>
+                    </div>
+                    <div class="links">
+                        <a href="#" class="project-btn">View Code <i class='bx bxl-github'></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-info">
+                    <h3>Interactive Design Webpage</h3>
+                    <p>A beautifully animated webpage featuring GSAP scroll animations, ensuring a dynamic and smooth
+                        user experience.</p>
+                    <div class="tech-stack">
+                        <span>HTML</span><span>CSS</span><span>GSAP</span>
+                    </div>
+                    <div class="links">
+                        <a href="#" class="project-btn">Live Link <i class='bx bx-link-external'></i></a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Education Section -->
+    <section class="education" id="education">
+        <h2 class="heading">My <span>Journey</span> 🎓</h2>
+
+        <div class="edu-container">
+            <h3>Education</h3>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>B.Tech in CSE-AI</h4>
+                    <p class="date">Current</p>
+                    <p>CGPA: 8.568</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Class XII</h4>
+                    <p class="date">2022</p>
+                    <p>Score: 79%</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Class X</h4>
+                    <p class="date">2020</p>
+                    <p>Score: 76%</p>
+                </div>
+            </div>
+
+            <h3>Achievements & Certifications</h3>
+            <div class="achievements">
+                <div class="ach-card">
+                    <i class='bx bx-code-alt'></i>
+                    <p>Active LeetCode Problem Solver</p>
+                </div>
+                <div class="ach-card">
+                    <i class='bx bx-badge-check'></i>
+                    <p>IBM SkillsBuild Internship</p>
+                </div>
+                <div class="ach-card">
+                    <i class='bx bx-cloud'></i>
+                    <p>AICTE Cloud Networking Internship</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <h2 class="heading">Let's <span>Connect</span> 💌</h2>
+        <div class="contact-wrapper">
+            <div class="contact-info">
+                <div class="info-item">
+                    <i class='bx bxs-envelope'></i>
+                    <p>bhumika23826@gmail.com</p>
+                </div>
+                <div class="info-item">
+                    <i class='bx bxs-phone'></i>
+                    <p>+91 9871XXXXXX</p>
+                </div>
+            </div>
+
+            <form action="" class="contact-form">
+                <div class="input-box">
+                    <input type="text" placeholder="Your Name" required>
+                    <input type="email" placeholder="Your Email" required>
+                </div>
+                <textarea name="" id="" cols="30" rows="10" placeholder="Your Cute Message" required></textarea>
+                <button type="submit" class="btn btn-primary">Send Message ✨</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-text">
+            <p>&copy; 2026 by Bhumika Kanojia | Crafted with 💖</p>
+        </div>
+        <div class="footer-iconTop">
+            <a href="#hero"><i class='bx bx-up-arrow-alt'></i></a>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
