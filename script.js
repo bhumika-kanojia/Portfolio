@@ -1,7 +1,8 @@
 // Dark Mode Toggle
+let themeToggle = document.querySelector('.theme-toggle');
 let themeIcon = document.getElementById('theme-icon');
 
-themeIcon.onclick = () => {
+themeToggle.onclick = () => {
     document.body.classList.toggle('dark-mode');
     
     if(document.body.classList.contains('dark-mode')){
@@ -14,10 +15,11 @@ themeIcon.onclick = () => {
 };
 
 // Navbar toggler for mobile
+let menuToggle = document.querySelector('.menu-toggle');
 let menuIcon = document.querySelector('#menu-icon');
 let navbar = document.querySelector('.navbar');
 
-menuIcon.onclick = () => {
+menuToggle.onclick = () => {
     menuIcon.classList.toggle('bx-x');
     navbar.classList.toggle('active');
 };

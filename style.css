@@ -19,12 +19,13 @@
     --main-color: #FFB6C1; /* Light Pink */
     --accent-color: #E6E6FA; /* Lavender */
     --card-bg: rgba(255, 255, 255, 0.6);
-    --card-border: rgba(255, 255, 255, 0.8);
+    --card-border: rgba(255, 182, 193, 0.6);
     --shadow: 0 8px 32px 0 rgba(255, 182, 193, 0.3);
     
     /* Toggle switch specifics */
     --blob-1: #FFB6C1;
     --blob-2: #ADD8E6;
+    --glow-color: rgba(255, 182, 193, 0.4);
 }
 
 .dark-mode {
@@ -39,6 +40,7 @@
     
     --blob-1: #4A3052;
     --blob-2: #2D1B36;
+    --glow-color: rgba(177, 156, 217, 0.4);
 }
 
 html {
@@ -118,17 +120,20 @@ section {
 /* Header */
 .header {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 2rem 9%;
+    top: 2rem;
+    left: 5%;
+    width: 90%;
+    padding: 1.5rem 4rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 100;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--card-border);
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
     transition: 0.3s;
 }
 
@@ -136,34 +141,96 @@ section {
     font-size: 2.8rem;
     color: var(--text-color);
     font-weight: 700;
+    position: relative;
+    text-decoration: none;
+    display: inline-block;
 }
 .logo span {
     color: var(--main-color);
 }
+.logo::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 60%;
+    height: 3px;
+    background: var(--main-color);
+    border-radius: 2px;
+    transition: 0.3s;
+}
+.logo:hover::after {
+    width: 100%;
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
 
 .navbar a {
-    font-size: 1.7rem;
+    font-size: 1.6rem;
     color: var(--text-color);
-    margin-left: 4rem;
     font-weight: 600;
-    transition: 0.3s;
+    padding: 0.8rem 1.8rem;
+    border-radius: 12px;
+    border: 1.5px solid transparent;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .navbar a:hover,
 .navbar a.active {
     color: var(--main-color);
+    background: var(--accent-color);
+    border-color: var(--main-color);
+    box-shadow: 0 0 15px var(--glow-color);
+}
+
+.navbar a:active {
+    transform: scale(0.95);
+    box-shadow: 0 0 25px var(--glow-color);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.theme-toggle, .menu-toggle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 12px;
+    border: 1.5px solid var(--card-border);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .theme-toggle i, .menu-toggle i {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     color: var(--text-color);
-    cursor: pointer;
     transition: 0.3s;
 }
-.theme-toggle i:hover {
-    color: var(--main-color);
-    transform: scale(1.1);
+
+.theme-toggle:hover, .menu-toggle:hover {
+    border-color: var(--main-color);
+    background: var(--accent-color);
+    box-shadow: 0 0 15px var(--glow-color);
 }
+
+.theme-toggle:hover i, .menu-toggle:hover i {
+    color: var(--main-color);
+}
+
+.theme-toggle:active, .menu-toggle:active {
+    transform: scale(0.95);
+}
+
 .menu-toggle {
     display: none;
 }
@@ -626,27 +693,35 @@ section {
 }
 @media (max-width: 768px) {
     .menu-toggle {
-        display: block;
+        display: flex;
     }
     .navbar {
         position: absolute;
-        top: 100%;
+        top: calc(100% + 1rem);
         left: 0;
         width: 100%;
-        padding: 1rem 3%;
+        padding: 2rem;
         background: var(--card-bg);
         backdrop-filter: blur(15px);
-        border-top: 1px solid rgba(0,0,0,0.1);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        box-shadow: var(--shadow);
         display: none;
+        flex-direction: column;
+        gap: 1rem;
+        animation: slideDown 0.3s ease;
     }
     .navbar.active {
-        display: block;
+        display: flex;
     }
     .navbar a {
         display: block;
-        font-size: 2rem;
-        margin: 3rem 0;
+        width: 100%;
+        font-size: 1.8rem;
+        padding: 1.2rem;
         text-align: center;
+        margin: 0;
     }
     .hero {
         flex-direction: column-reverse;
@@ -659,5 +734,16 @@ section {
     .hero-img .blob-wrapper {
         width: 280px;
         height: 280px;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
