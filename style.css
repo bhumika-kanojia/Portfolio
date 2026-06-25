@@ -21,11 +21,16 @@
     --card-bg: rgba(255, 255, 255, 0.6);
     --card-border: rgba(255, 182, 193, 0.6);
     --shadow: 0 8px 32px 0 rgba(255, 182, 193, 0.3);
-    
+
     /* Toggle switch specifics */
     --blob-1: #FFB6C1;
     --blob-2: #ADD8E6;
     --glow-color: rgba(255, 182, 193, 0.4);
+
+    /* 3D Lines canvas colours */
+    --line-color-1: 255, 182, 193;   /* pink */
+    --line-color-2: 177, 156, 217;   /* lavender */
+    --line-color-3: 173, 216, 230;   /* light blue */
 }
 
 .dark-mode {
@@ -37,15 +42,20 @@
     --card-bg: rgba(45, 27, 54, 0.6);
     --card-border: rgba(177, 156, 217, 0.2);
     --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-    
+
     --blob-1: #4A3052;
     --blob-2: #2D1B36;
     --glow-color: rgba(177, 156, 217, 0.4);
+
+    --line-color-1: 177, 156, 217;
+    --line-color-2: 255, 182, 193;
+    --line-color-3: 100, 180, 230;
 }
 
 html {
     font-size: 62.5%; /* 1rem = 10px */
     overflow-x: hidden;
+    overflow-x: clip; /* stronger: prevents layout shift from off-screen transforms */
 }
 
 body {
@@ -56,6 +66,7 @@ body {
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
+    overflow-x: clip; /* stronger clip — won't scroll to off-screen elements */
 }
 
 h1, h2, h3, h4, h5, h6, .logo {
@@ -88,14 +99,14 @@ h1, h2, h3, h4, h5, h6, .logo {
 }
 
 @keyframes float {
-    0% { transform: translateY(0px) scale(1); }
+    0%   { transform: translateY(0px) scale(1); }
     100% { transform: translateY(30px) scale(1.1); }
 }
 
 /* Global Styles */
 section {
-    min-height: 100vh;
-    padding: 10rem 9% 2rem;
+    min-height: 80vh;
+    padding: 7rem 9% 2rem;
 }
 
 .heading {
@@ -117,7 +128,7 @@ section {
     border-radius: 20px;
 }
 
-/* Header */
+/* ── Header ─────────────────────────────────────────────────── */
 .header {
     position: fixed;
     top: 2rem;
@@ -235,7 +246,7 @@ section {
     display: none;
 }
 
-/* Buttons */
+/* ── Buttons ─────────────────────────────────────────────────── */
 .btn {
     display: inline-block;
     padding: 1rem 2.8rem;
@@ -266,13 +277,35 @@ section {
     transform: translateY(-5px);
 }
 
-/* Hero Section */
+/* ── Hero Section ─────────────────────────────────────────────── */
 .hero {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 5rem;
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh; /* hero always fills viewport */
 }
+
+/* 3D Lines Canvas — full-hero absolute layer */
+#hero-lines-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Content sits above canvas */
+.hero-content {
+    position: relative;
+    z-index: 2;
+    /* clipping handled by parent .hero { overflow: hidden } */
+}
+
 .hero-content h1 {
     font-size: 5.6rem;
     font-weight: 700;
@@ -291,15 +324,106 @@ section {
 .hero-content h3 span {
     color: var(--main-color);
 }
-.hero-content p {
-    font-size: 1.6rem;
-    margin-bottom: 3rem;
+.hero-content .tagline {
+    font-size: 2.2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+    min-height: 3.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
 }
+.hero-content .description {
+    font-size: 1.6rem;
+    line-height: 1.6;
+    margin-bottom: 3rem;
+    color: var(--text-color);
+    opacity: 0.8;
+    max-width: 550px;
+}
+
+/* ── Hero entrance: text from left, image from right ── */
+/* Base state: fully off-screen left, invisible */
+.slide-in {
+    opacity: 0;
+    transform: translateX(-110vw);
+    will-change: transform, opacity;
+}
+
+/* When JS adds .animate-in, the slide plays */
+.slide-in.animate-in {
+    animation: heroSlideLeft 1.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Staggered delays MUST be on .animate-in to apply during JS-triggered animation */
+.hero-content .greeting.slide-in.animate-in    { animation-delay: 0.0s;  }
+.hero-content .name.slide-in.animate-in        { animation-delay: 0.2s;  }
+.hero-content .role.slide-in.animate-in        { animation-delay: 0.4s;  }
+.hero-content .tagline.slide-in.animate-in     { animation-delay: 0.6s;  }
+.hero-content .description.slide-in.animate-in { animation-delay: 0.8s;  }
+.hero-content .btn-group.slide-in.animate-in   { animation-delay: 1.0s;  }
+.hero-content .social-links.slide-in.animate-in{ animation-delay: 1.2s;  }
+
+@keyframes heroSlideLeft {
+    from { opacity: 0; transform: translateX(-110vw); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Hero image — slides in from right (off-screen) */
+.hero-img {
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    transform: translateX(110vw);
+    will-change: transform, opacity;
+    transition: none;
+}
+.hero-img.animate-in {
+    animation: heroSlideRight 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+@keyframes heroSlideRight {
+    from { opacity: 0; transform: translateX(110vw); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Hero scroll-exit: slides upward as user scrolls to About ── */
+.hero-exit {
+    animation: heroExitUp 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+}
+@keyframes heroExitUp {
+    from { opacity: 1; transform: translateY(0);   }
+    to   { opacity: 0; transform: translateY(-60px); }
+}
+
+/* hero-content & hero-img get the exit separately for staggered feel */
+.hero-exit .hero-content {
+    animation: heroExitUp 0.65s cubic-bezier(0.4, 0, 0.2, 1) 0s forwards;
+}
+.hero-exit .hero-img {
+    animation: heroExitUp 0.65s cubic-bezier(0.4, 0, 0.2, 1) 0.08s forwards;
+}
+
+/* Typewriter cursor */
+.typewriter-cursor {
+    display: inline-block;
+    width: 2.5px;
+    height: 1.8em;
+    background-color: var(--main-color);
+    margin-left: 6px;
+    animation: blink 0.75s step-end infinite;
+}
+@keyframes blink {
+    from, to { background-color: transparent; }
+    50%       { background-color: var(--main-color); }
+}
+
 .btn-group {
     display: flex;
     gap: 2rem;
     margin-bottom: 3rem;
 }
+
 .social-links a {
     display: inline-flex;
     justify-content: center;
@@ -320,6 +444,7 @@ section {
     transform: translateY(-3px);
 }
 
+/* Hero avatar / blob — properties merged above */
 .hero-img .blob-wrapper {
     width: 350px;
     height: 350px;
@@ -332,22 +457,41 @@ section {
     box-shadow: var(--shadow);
     border: 2px solid var(--main-color);
     overflow: hidden;
-    animation: blob-bounce 5s infinite alternate;
+    animation: blobBounce 5s infinite alternate ease-in-out;
+    backdrop-filter: blur(8px);
 }
 .hero-img img {
     width: 90%;
     height: 90%;
     object-fit: cover;
     border-radius: 50%;
+    user-select: none;
 }
-
-@keyframes blob-bounce {
-    0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
-    50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+@keyframes blobBounce {
+    0%   { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+    50%  { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
     100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
 }
 
-/* About Section */
+/* ── About Section ─────────────────────────────────────────────── */
+
+/* About Me heading — clamp / pop-in animation */
+/* Starts hidden; .clamp-animate added/removed by JS on every visit */
+.about .heading {
+    opacity: 0;
+    transform: scale(0.6) translateY(30px);
+    transition: none;
+}
+.about .heading.clamp-animate {
+    animation: headingClamp 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes headingClamp {
+    0%   { opacity: 0; transform: scale(0.55) translateY(35px); }
+    55%  { opacity: 1; transform: scale(1.1)  translateY(-6px); }
+    78%  { transform: scale(0.96) translateY(3px); }
+    100% { opacity: 1; transform: scale(1)    translateY(0); }
+}
+
 .about {
     display: flex;
     flex-direction: column;
@@ -369,7 +513,7 @@ section {
     margin-bottom: 1.5rem;
 }
 
-/* Skills Section */
+/* ── Skills Section ─────────────────────────────────────────────── */
 .skills-container {
     display: flex;
     justify-content: center;
@@ -396,30 +540,19 @@ section {
     background: var(--main-color);
     color: #fff;
 }
-.skill-box i {
-    font-size: 2.5rem;
-    color: var(--main-color);
-}
-.skill-box:hover i {
-    color: #fff;
-}
+.skill-box i { font-size: 2.5rem; color: var(--main-color); }
+.skill-box:hover i { color: #fff; }
 
-/* Projects Section */
-/* =========================
-   Projects Section
-========================= */
-
+/* ── Projects Section ─────────────────────────────────────────────── */
 #projects {
-    padding: 10rem 9% 5rem;
+    padding: 7rem 9% 2rem;
 }
-
 .projects-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 3rem;
     margin-top: 4rem;
 }
-
 .project-card {
     background: var(--card-bg);
     backdrop-filter: blur(12px);
@@ -428,43 +561,36 @@ section {
     padding: 3rem;
     box-shadow: var(--shadow);
     transition: all 0.3s ease;
-    
     display: flex;
     flex-direction: column;
     height: 100%;
 }
-
 .project-card:hover {
     transform: translateY(-10px);
     border-color: var(--main-color);
 }
-
 .project-info {
     display: flex;
     flex-direction: column;
     height: 100%;
 }
-
 .project-info h3 {
     font-size: 2.2rem;
     margin-bottom: 1.5rem;
     color: var(--text-color);
 }
-
 .project-info p {
     font-size: 1.5rem;
     line-height: 1.8;
     margin-bottom: 2rem;
     flex-grow: 1;
 }
-
 .tech-stack {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
     margin-bottom: 2rem;
 }
-
 .tech-stack span {
     background: var(--accent-color);
     color: var(--text-color);
@@ -473,14 +599,12 @@ section {
     font-size: 1.2rem;
     font-weight: 600;
 }
-
 .links {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
     margin-top: auto;
 }
-
 .project-btn {
     display: inline-flex;
     align-items: center;
@@ -493,32 +617,13 @@ section {
     font-weight: 600;
     transition: 0.3s ease;
 }
-
 .project-btn:hover {
     transform: translateY(-3px);
     opacity: 0.9;
 }
+.project-btn i { font-size: 1.6rem; }
 
-.project-btn i {
-    font-size: 1.6rem;
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-    .projects-container {
-        grid-template-columns: 1fr;
-    }
-
-    .project-card {
-        padding: 2.5rem;
-    }
-
-    .project-info h3 {
-        font-size: 2rem;
-    }
-}
-
-/* Education Section */
+/* ── Education Section ─────────────────────────────────────────────── */
 .edu-container {
     max-width: 900px;
     margin: 0 auto;
@@ -554,18 +659,14 @@ section {
     background: var(--main-color);
     border-radius: 50%;
 }
-.timeline-item h4 {
-    font-size: 1.8rem;
-}
+.timeline-item h4   { font-size: 1.8rem; }
 .timeline-item .date {
     font-size: 1.3rem;
     color: var(--main-color);
     margin-top: 0.5rem;
     margin-bottom: 1rem;
 }
-.timeline-item p {
-    font-size: 1.5rem;
-}
+.timeline-item p { font-size: 1.5rem; }
 
 .achievements {
     display: flex;
@@ -586,16 +687,10 @@ section {
     transform: translateY(-5px);
     border-bottom: 3px solid var(--main-color);
 }
-.ach-card i {
-    font-size: 3rem;
-    color: var(--main-color);
-}
-.ach-card p {
-    font-size: 1.6rem;
-    font-weight: 600;
-}
+.ach-card i { font-size: 3rem; color: var(--main-color); }
+.ach-card p { font-size: 1.6rem; font-weight: 600; }
 
-/* Contact Section */
+/* ── Contact Section ─────────────────────────────────────────────── */
 .contact-wrapper {
     display: flex;
     justify-content: center;
@@ -617,10 +712,7 @@ section {
     border-radius: 2rem;
     box-shadow: var(--shadow);
 }
-.info-item i {
-    color: var(--main-color);
-    font-size: 2.5rem;
-}
+.info-item i { color: var(--main-color); font-size: 2.5rem; }
 .contact-form {
     background: var(--card-bg);
     padding: 4rem;
@@ -647,12 +739,9 @@ section {
     resize: none;
     margin-bottom: 2rem;
 }
-.contact-form .btn {
-    width: 100%;
-    border: none;
-}
+.contact-form .btn { width: 100%; border: none; }
 
-/* Footer */
+/* ── Footer ─────────────────────────────────────────────────── */
 .footer {
     display: flex;
     justify-content: space-between;
@@ -662,9 +751,7 @@ section {
     background: var(--card-bg);
     backdrop-filter: blur(10px);
 }
-.footer-text p {
-    font-size: 1.6rem;
-}
+.footer-text p { font-size: 1.6rem; }
 .footer-iconTop a {
     display: inline-flex;
     justify-content: center;
@@ -674,27 +761,18 @@ section {
     border-radius: .8rem;
     transition: .5s ease;
 }
-.footer-iconTop a:hover {
-    box-shadow: 0 0 1rem var(--main-color);
-}
-.footer-iconTop a i {
-    font-size: 2.4rem;
-    color: #fff;
+.footer-iconTop a:hover { box-shadow: 0 0 1rem var(--main-color); }
+.footer-iconTop a i { font-size: 2.4rem; color: #fff; }
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 900px) {
+    .edu-container { grid-template-columns: 1fr; }
+    .contact-wrapper { flex-direction: column; }
 }
 
-/* Responsive constraints */
-@media (max-width: 900px) {
-    .edu-container {
-        grid-template-columns: 1fr;
-    }
-    .contact-wrapper {
-        flex-direction: column;
-    }
-}
 @media (max-width: 768px) {
-    .menu-toggle {
-        display: flex;
-    }
+    .menu-toggle { display: flex; }
+
     .navbar {
         position: absolute;
         top: calc(100% + 1rem);
@@ -712,9 +790,7 @@ section {
         gap: 1rem;
         animation: slideDown 0.3s ease;
     }
-    .navbar.active {
-        display: flex;
-    }
+    .navbar.active { display: flex; }
     .navbar a {
         display: block;
         width: 100%;
@@ -723,27 +799,29 @@ section {
         text-align: center;
         margin: 0;
     }
+
     .hero {
         flex-direction: column-reverse;
         text-align: center;
         padding-top: 12rem;
     }
-    .btn-group {
-        justify-content: center;
+    .hero-content .tagline  { justify-content: center; }
+    .hero-content .description {
+        margin-left: auto;
+        margin-right: auto;
     }
+    .btn-group { justify-content: center; }
     .hero-img .blob-wrapper {
         width: 280px;
         height: 280px;
     }
+
+    .projects-container { grid-template-columns: 1fr; }
+    .project-card { padding: 2.5rem; }
+    .project-info h3 { font-size: 2rem; }
 }
 
 @keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
