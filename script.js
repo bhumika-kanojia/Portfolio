@@ -29,7 +29,6 @@ menuToggle.onclick = () => {
 
 const heroSection   = document.getElementById('hero');
 const aboutSection  = document.getElementById('about');
-const aboutHeading  = document.querySelector('.about .heading');
 const heroSlideEls  = document.querySelectorAll('.hero-content .slide-in');
 const heroImg       = document.querySelector('.hero-img');
 const sections      = document.querySelectorAll('section');
@@ -64,21 +63,63 @@ const heroObserver = new IntersectionObserver(
 );
 heroObserver.observe(heroSection);
 
-// ── About heading clamp: fires every time it enters view ────────
+// ── About section entrance animations ────────────────────────
 const aboutObserver = new IntersectionObserver(
-    (entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && aboutHeading) {
-                triggerAnimation(aboutHeading, 'clamp-animate');
-            } else if (!entry.isIntersecting && aboutHeading) {
-                // Reset so it can re-fire next time
-                aboutHeading.classList.remove('clamp-animate');
-            }
-        });
-    },
-    { threshold: 0.3, rootMargin: '0px 0px -30px 0px' }
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        aboutSection.classList.add("show");
+      }
+    });
+  },
+  {
+    threshold: 0.3,
+  }
 );
-if (aboutHeading) aboutObserver.observe(aboutHeading);
+
+if (aboutSection) {
+  aboutObserver.observe(aboutSection);
+}
+
+// ── 3D Tilt + Parallax on About Visual Card ───────────────────
+const aboutCard = document.getElementById('about-visual-card');
+const avcImg = document.getElementById('avc-img');
+
+if (aboutCard) {
+    const MAX_TILT = 15;     // max degrees rotation
+    const MAX_MOVE = 15;     // max px translation
+    
+    aboutCard.addEventListener('mousemove', (e) => {
+        const rect = aboutCard.getBoundingClientRect();
+        // Normalise between -0.5 and 0.5
+        const nx = (e.clientX - rect.left) / rect.width  - 0.5;
+        const ny = (e.clientY - rect.top)  / rect.height - 0.5;
+
+        const rotY = nx * MAX_TILT;
+        const rotX = -ny * MAX_TILT;
+        
+        // Move the card slightly in the direction of the cursor for a tilt and move effect
+        const moveX = nx * MAX_MOVE;
+        const moveY = ny * MAX_MOVE;
+
+        // Apply tilt and translation movement
+        aboutCard.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) translate3d(${moveX}px, ${moveY}px, 20px) scale3d(1.04, 1.04, 1.04)`;
+        
+        if (avcImg) {
+            // Parallax shift for the image inside
+            avcImg.style.transform = `translateZ(70px) translate(${-nx * 12}px, ${-ny * 12}px) scale(1.05)`;
+        }
+    });
+
+    aboutCard.addEventListener('mouseleave', () => {
+        // Reset transforms so CSS float animation continues smoothly
+        aboutCard.style.transform = '';
+        if (avcImg) {
+            avcImg.style.transform = '';
+        }
+    });
+}
+
 
 // ── Scroll: active nav + hero exit ───────────────────────────
 

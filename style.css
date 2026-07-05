@@ -56,6 +56,7 @@ html {
     font-size: 62.5%; /* 1rem = 10px */
     overflow-x: hidden;
     overflow-x: clip; /* stronger: prevents layout shift from off-screen transforms */
+    scroll-behavior: smooth;
 }
 
 body {
@@ -473,44 +474,508 @@ section {
     100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
 }
 
-/* ── About Section ─────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════
+   ABOUT SECTION — Fixed Animations
+   ══════════════════════════════════════════════════════════════ */
 
-/* About Me heading — clamp / pop-in animation */
-/* Starts hidden; .clamp-animate added/removed by JS on every visit */
-.about .heading {
-    opacity: 0;
-    transform: scale(0.6) translateY(30px);
-    transition: none;
-}
-.about .heading.clamp-animate {
-    animation: headingClamp 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-@keyframes headingClamp {
-    0%   { opacity: 0; transform: scale(0.55) translateY(35px); }
-    55%  { opacity: 1; transform: scale(1.1)  translateY(-6px); }
-    78%  { transform: scale(0.96) translateY(3px); }
-    100% { opacity: 1; transform: scale(1)    translateY(0); }
-}
-
+/* ── Section wrapper ── */
 .about {
     display: flex;
     flex-direction: column;
     align-items: center;
+    min-height: 80vh;
+    padding: 2.5rem 9% 6rem; /* reduced padding-top to align nicely below navbar */
 }
-.about-content {
+
+/* Scroll gap fix: nav is ~80px tall, top: 2rem (~20px) = ~100px.
+   Use 110px to give a small comfortable breathing room. */
+.about-section,
+#about {
+    scroll-margin-top: 110px;
+}
+
+/* ── Inner two-column flex row ── */
+.about-inner {
+    display: flex;
+    align-items: center;
+    gap: 6rem;
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* ══ FIX 1: LEFT VISUAL CARD — 3D HOVER ══════════════════════ */
+
+/*
+ * RULE: perspective must be on the PARENT, not the card.
+ * The card itself gets transform-style: preserve-3d.
+ * overflow: hidden must NOT be on the card or its perspective parent —
+ * it cancels preserve-3d in Chrome/Edge.
+ */
+
+/* Perspective parent wrapper */
+.about-visual {
+    flex: 0 0 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1200px;        /* perspective lives HERE, not on the card */
+    perspective-origin: 50% 50%;
+}
+
+/* The 3D card itself */
+.about-card {
+    position: relative;
+    width: 100%;
+    max-width: 38rem;
+    border-radius: 28px;
     background: var(--card-bg);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--card-border);
-    padding: 4rem;
-    border-radius: 3rem;
-    max-width: 800px;
-    text-align: center;
-    box-shadow: var(--shadow);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1.5px solid var(--card-border);
+    box-shadow:
+        0 0 0 1px rgba(177,156,217,0.12) inset,
+        0 8px 40px rgba(0,0,0,0.35),
+        0 0 60px rgba(140, 100, 220, 0.15);
+    /* NO overflow:hidden here — it breaks preserve-3d */
+    padding: 2.4rem 2.4rem 1.6rem;
+    cursor: default;
+    transform-style: preserve-3d;
+    /* Idle floating animation */
+    animation: floatCard 4s ease-in-out infinite;
+    transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.5s ease;
+    will-change: transform;
 }
+
+/* CSS-only 3D hover helper (transforms are driven dynamically by JS) */
+.about-card:hover {
+    box-shadow:
+        0 25px 70px rgba(180, 120, 255, 0.35),
+        0 0 0 1.5px rgba(177,156,217,0.4) inset;
+    animation-play-state: paused;
+}
+
+/* Idle floating keyframes */
+@keyframes floatCard {
+    0%, 100% { transform: translateY(0)    rotateY(-4deg); }
+    50%       { transform: translateY(-14px) rotateY(4deg); }
+}
+
+/* Image — lifted forward in 3D space */
+.avc-img-wrap {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    border-radius: 18px;
+    line-height: 0;
+    transform-style: preserve-3d;
+}
+.avc-img {
+    width: 100%;
+    height: auto;
+    border-radius: 18px;
+    display: block;
+    object-fit: cover;
+    user-select: none;
+    pointer-events: none;
+    transform: translateZ(45px);   /* lift image toward viewer in 3D */
+    transition: transform 0.7s ease;
+    filter: brightness(0.92) saturate(1.1);
+}
+.about-card:hover .avc-img {
+    transform: translateZ(70px) scale(1.05);
+}
+
+/* Soft purple ambient glow inside card */
+.avc-glow {
+    position: absolute;
+    inset: -30px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 60%, rgba(130, 80, 200, 0.28) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(30px);
+    animation: avcGlowPulse 4s ease-in-out infinite alternate;
+}
+@keyframes avcGlowPulse {
+    0%   { opacity: 0.7; transform: scale(0.95); }
+    100% { opacity: 1;   transform: scale(1.08); }
+}
+
+/* Caption badge inside card */
+.avc-badge {
+    position: relative;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 1.4rem;
+    padding: 0.85rem 1.8rem;
+    border-radius: 5rem;
+    background: rgba(177, 156, 217, 0.1);
+    border: 1px solid rgba(177, 156, 217, 0.25);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: rgba(226, 217, 243, 0.75);
+    letter-spacing: 0.02em;
+    width: 100%;
+    justify-content: center;
+    transform: translateZ(20px);  /* slight 3D lift for the badge too */
+}
+.avc-badge i {
+    font-size: 1.6rem;
+    color: var(--main-color);
+}
+
+/* ══ FIX 2: RIGHT SIDE — TEXT APPEARANCE ANIMATION ══════════════
+
+   Strategy: All text elements start invisible (opacity:0).
+   When JS adds .show to .about-section, CSS animates each element
+   in sequence via animation-delay. No JS setTimeout needed for text.
+   ════════════════════════════════════════════════════════════════ */
+
+/* RIGHT content column */
+.about-content-col {
+    flex: 1;
+}
+
+/* Base hidden state for all animated text */
+.about-label,
+.about-heading,
 .about-text p {
-    font-size: 1.8rem;
-    line-height: 1.8;
-    margin-bottom: 1.5rem;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+/* Trigger animations when .show is added to .about-section */
+.about-section.show .about-label {
+    animation: fadeFocus 0.7s ease forwards;
+    animation-delay: 0.1s;
+}
+
+.about-section.show .about-heading {
+    animation: fadeFocus 0.8s ease forwards;
+    animation-delay: 0.3s;
+}
+
+.about-section.show .about-text p:nth-child(1) {
+    animation: fadeFocus 0.8s ease forwards;
+    animation-delay: 0.5s;
+}
+
+.about-section.show .about-text p:nth-child(2) {
+    animation: fadeFocus 0.8s ease forwards;
+    animation-delay: 0.75s;
+}
+
+.about-section.show .about-text p:nth-child(3) {
+    animation: fadeFocus 0.8s ease forwards;
+    animation-delay: 1.0s;
+}
+
+/* Badges fade in after the last paragraph */
+.about-section.show .about-badges {
+    animation: fadeFocus 0.7s ease forwards;
+    animation-delay: 1.25s;
+}
+
+/* The focus-in keyframe: soft opacity + upward movement, no glow */
+@keyframes fadeFocus {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+        filter: blur(2px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+/* ── Pill label (uses about-label class for animation trigger) ── */
+.about-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.65rem 1.5rem;
+    border-radius: 5rem;
+    background: rgba(177, 156, 217, 0.1);
+    border: 1px solid rgba(177, 156, 217, 0.28);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: rgba(226, 217, 243, 0.7);
+    letter-spacing: 0.03em;
+    margin-bottom: 1.4rem;
+}
+.about-pill i {
+    font-size: 1.45rem;
+    color: var(--main-color);
+}
+
+/* ── Main heading ── */
+.about-main-heading {
+    font-family: var(--font-heading);
+    font-size: 5rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 2.4rem;
+    line-height: 1.1;
+}
+.about-main-heading span {
+    color: var(--main-color);
+}
+
+/* ── Paragraphs container ── */
+.about-paras {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+    margin-bottom: 3.2rem;
+}
+
+/* Individual paragraph base style — clean, no bold, no color highlight */
+.about-para {
+    font-size: 1.65rem;
+    line-height: 1.85;
+    color: var(--text-color);
+}
+
+/* ── Stat badges row ── */
+.about-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    opacity: 0;     /* hidden initially, shown by .show animation */
+}
+.about-badge {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.2rem 1.8rem;
+    border-radius: 16px;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    cursor: default;
+    flex: 1;
+    min-width: 10rem;
+}
+.about-badge:hover {
+    transform: translateY(-4px);
+    border-color: var(--main-color);
+    box-shadow: 0 8px 24px rgba(177,156,217,0.2);
+}
+.about-badge i {
+    font-size: 2.2rem;
+    color: var(--main-color);
+    flex-shrink: 0;
+}
+.about-badge div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+.badge-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-color);
+    font-family: var(--font-heading);
+    line-height: 1.2;
+}
+.badge-sub {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    opacity: 0.55;
+    line-height: 1.2;
+}
+
+/* ── Light-mode overrides ── */
+body:not(.dark-mode) .avc-badge,
+body:not(.dark-mode) .about-pill {
+    background: rgba(177, 156, 217, 0.08);
+    border-color: rgba(177, 156, 217, 0.3);
+    color: rgba(74, 74, 74, 0.75);
+}
+body:not(.dark-mode) .about-card {
+    box-shadow:
+        0 0 0 1px rgba(177,156,217,0.15) inset,
+        0 8px 40px rgba(177,156,217,0.2);
+}
+body:not(.dark-mode) .avc-glow {
+    background: radial-gradient(circle at 50% 60%, rgba(180, 130, 230, 0.18) 0%, transparent 70%);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   END About Section
+   ══════════════════════════════════════════════════════════════ */
+
+
+.stack-card:nth-child(1) { opacity: 1; }
+.stack-card:nth-child(2) { opacity: 0.96; }
+.stack-card:nth-child(3) { opacity: 0.94; }
+.stack-card:nth-child(4) { opacity: 0.92; }
+
+.card-stack:hover .stack-card {
+    opacity: 1;
+    transform: translate(var(--open-x), var(--open-y)) rotate(var(--open-rot)) scale(1.015);
+}
+.card-stack:hover .stack-card:hover {
+    transform: translate(var(--open-x), var(--open-y)) rotate(var(--open-rot)) scale(1.045);
+    border-color: rgba(255, 182, 193, 0.95);
+    box-shadow:
+        0 1.8rem 4.5rem rgba(255, 182, 193, 0.34),
+        0 0 2.8rem rgba(255, 182, 193, 0.22),
+        0 0 0 1.5px rgba(255, 182, 193, 0.45) inset;
+}
+.stack-card.is-active,
+.card-stack:hover .stack-card.is-active,
+.card-stack:hover .stack-card.is-active:hover {
+    opacity: 1;
+    z-index: 60;
+    transform: translate(-0.6rem, -2.4rem) rotate(-1deg) scale(1.055);
+    border-color: rgba(255, 182, 193, 1);
+    box-shadow:
+        0 2.2rem 5.5rem rgba(255, 182, 193, 0.42),
+        0 0 3.5rem rgba(255, 182, 193, 0.3),
+        0 0 0 1.7px rgba(255, 182, 193, 0.52) inset;
+    transition-delay: 0s;
+}
+.stack-card.is-active .card-shine {
+    background-position: -60% 0;
+    opacity: 1;
+}
+.stack-card:focus-visible {
+    box-shadow:
+        0 1.8rem 4.8rem rgba(255, 182, 193, 0.36),
+        0 0 0 2px rgba(255, 255, 255, 0.9) inset,
+        0 0 0 4px rgba(255, 182, 193, 0.48);
+}
+
+.stack-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: 1.2rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--main-color);
+    opacity: 0.9;
+}
+.stack-hint i {
+    font-size: 1.6rem;
+}
+
+/* Icon wrap with pulse glow */
+.mini-icon-wrap {
+    width: 4.8rem;
+    height: 4.8rem;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(255,182,193,0.3), rgba(230,230,250,0.25));
+    border: 1.2px solid rgba(255,182,193,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.4rem;
+    position: relative;
+    z-index: 2;
+}
+.mini-icon {
+    font-size: 2.4rem;
+    color: var(--main-color);
+    animation: iconPulse 3s ease-in-out infinite;
+}
+@keyframes iconPulse {
+    0%, 100% { filter: drop-shadow(0 0 4px rgba(255,182,193,0.4)); }
+    50%       { filter: drop-shadow(0 0 10px rgba(255,182,193,0.85)); }
+}
+
+.mini-title {
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: var(--main-color);
+    margin-bottom: 1rem;
+    font-family: var(--font-heading);
+    position: relative;
+    z-index: 2;
+}
+.mini-desc {
+    font-size: 1.4rem;
+    line-height: 1.7;
+    color: var(--text-color);
+    position: relative;
+    z-index: 2;
+}
+
+/* Tech tags inside card 3 */
+.mini-desc.tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    align-items: flex-start;
+}
+.mini-desc.tech-tags span {
+    background: linear-gradient(135deg, rgba(255,182,193,0.2), rgba(230,230,250,0.2));
+    border: 1px solid rgba(255,182,193,0.4);
+    color: var(--main-color);
+    padding: 0.35rem 0.9rem;
+    border-radius: 4rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* Learning list */
+.mini-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    position: relative;
+    z-index: 2;
+}
+.mini-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.4rem;
+    color: var(--text-color);
+}
+.mini-list li i {
+    color: var(--main-color);
+    font-size: 1.6rem;
+    flex-shrink: 0;
+}
+
+/* ── Shared fade-up keyframe ── */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Dark mode overrides ── */
+.dark-mode .chip {
+    background: linear-gradient(135deg, rgba(177,156,217,0.2), rgba(45,27,54,0.3));
+    border-color: rgba(177,156,217,0.4);
+    color: var(--main-color);
+}
+.dark-mode .mini-icon-wrap {
+    background: linear-gradient(135deg, rgba(177,156,217,0.2), rgba(45,27,54,0.3));
+    border-color: rgba(177,156,217,0.4);
+}
+.dark-mode .mini-desc.tech-tags span {
+    background: linear-gradient(135deg, rgba(177,156,217,0.15), rgba(45,27,54,0.2));
+    border-color: rgba(177,156,217,0.35);
+}
+.dark-mode .stack-card {
+    background:
+        linear-gradient(135deg, rgba(45,27,54,0.74), rgba(26,26,36,0.58)),
+        var(--card-bg);
+    border-color: rgba(177, 156, 217, 0.38);
+}
+.dark-mode .mini-grid-line {
+    background: linear-gradient(to bottom, transparent, rgba(177,156,217,0.45) 30%, rgba(177,156,217,0.6) 70%, transparent);
 }
 
 /* ── Skills Section ─────────────────────────────────────────────── */
@@ -768,6 +1233,26 @@ section {
 @media (max-width: 900px) {
     .edu-container { grid-template-columns: 1fr; }
     .contact-wrapper { flex-direction: column; }
+    /* About section: stack to single column on tablet */
+    .about-inner {
+        flex-direction: column;
+        gap: 4rem;
+    }
+    .about-visual-col {
+        flex: none;
+        width: 100%;
+        max-width: 42rem;
+        margin: 0 auto;
+    }
+    .about-card {
+        max-width: 100%;
+    }
+    .about-content-col {
+        width: 100%;
+    }
+    .about-main-heading {
+        font-size: 4rem;
+    }
 }
 
 @media (max-width: 768px) {
@@ -819,6 +1304,38 @@ section {
     .projects-container { grid-template-columns: 1fr; }
     .project-card { padding: 2.5rem; }
     .project-info h3 { font-size: 2rem; }
+
+    /* About section: mobile adjustments */
+    .about {
+        padding: 9rem 6% 4rem;
+        scroll-margin-top: 7rem;
+    }
+    #about {
+        scroll-margin-top: 7rem;
+    }
+    .about-inner {
+        gap: 3rem;
+    }
+    .about-card {
+        /* Disable 3D hover on mobile to avoid accidental triggers */
+        animation: floatCard 4s ease-in-out infinite;
+    }
+    .about-card:hover {
+        transform: none;
+    }
+    .about-main-heading {
+        font-size: 3.6rem;
+    }
+    .about-para {
+        font-size: 1.5rem;
+    }
+    .about-badges {
+        gap: 0.9rem;
+    }
+    .about-badge {
+        padding: 1rem 1.2rem;
+        min-width: 8rem;
+    }
 }
 
 @keyframes slideDown {
