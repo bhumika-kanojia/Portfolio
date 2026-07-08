@@ -376,10 +376,133 @@ const init3DLines = () => {
     render();
 };
 
+/* ── Bootstrap ─────────────────────────────────────────────────
+   initSkillFlow must run AFTER DOM is ready so elements exist.
+   ──────────────────────────────────────────────────────────── */
+
+// ── Skill Flow Section Animation ─────────────────────────────
+const initSkillFlow = () => {
+    const section  = document.getElementById('skills');
+    if (!section) return;
+
+    // ── 1. Build heading spans (letter-by-letter) ─────────────
+    const headingEl  = document.getElementById('sf-heading');
+    const headingText = 'My Tech Stack ✨';
+
+    // Words that should get the gradient "colored" class
+    const coloredWords = new Set(['Tech', 'Stack']);
+
+    if (headingEl) {
+        headingEl.innerHTML = '';
+        const words = headingText.split(' ');
+        words.forEach((word, wi) => {
+            // Each character in this word
+            [...word].forEach(ch => {
+                const span = document.createElement('span');
+                span.className = 'sf-letter' + (coloredWords.has(word) ? ' colored' : '');
+                span.textContent = ch;
+                headingEl.appendChild(span);
+            });
+            // Space between words (except after last)
+            if (wi < words.length - 1) {
+                const sp = document.createElement('span');
+                sp.className = 'sf-space';
+                sp.textContent = ' ';
+                headingEl.appendChild(sp);
+            }
+        });
+    }
+
+    // ── 2. Build bottom tagline word spans ────────────────────
+    const taglineEl   = document.getElementById('sf-tagline');
+    const taglineText = 'Building UI. Writing logic. Managing data. Solving problems. Deploying projects.';
+    // Accent words (the verbs)
+    const accentWords = new Set(['Building', 'Writing', 'Managing', 'Solving', 'Deploying']);
+
+    if (taglineEl) {
+        taglineEl.innerHTML = '';
+        taglineText.split(' ').forEach(word => {
+            const span = document.createElement('span');
+            const baseWord = word.replace(/\.$/, '');
+            span.className = 'sf-word' + (accentWords.has(baseWord) ? ' sf-word-accent' : '');
+            span.textContent = word;
+            taglineEl.appendChild(span);
+            // Space span
+            const sp = document.createElement('span');
+            sp.className = 'sf-word';
+            sp.textContent = ' ';
+            taglineEl.appendChild(sp);
+        });
+    }
+
+    // ── 3. Guard — only animate once ─────────────────────────
+    let sfAnimated = false;
+
+    // ── 4. Main sequence ─────────────────────────────────────
+    const runSkillFlowSequence = () => {
+        if (sfAnimated) return;
+        sfAnimated = true;
+
+        // Step 0 — Show section blobs (soft background)
+        const blobs = section.querySelectorAll('.sf-blob');
+        blobs.forEach(b => b.classList.add('sf-blob-visible'));
+
+        // Step 1 — Letter-by-letter heading reveal
+        const letters = section.querySelectorAll('.sf-letter');
+        const LETTER_DELAY = 55; // ms between letters
+        letters.forEach((letter, i) => {
+            setTimeout(() => letter.classList.add('visible'), i * LETTER_DELAY);
+        });
+
+        const headingDuration = letters.length * LETTER_DELAY + 300;
+
+        // Step 2 — Fade in subtitle after heading completes
+        setTimeout(() => {
+            const sub = document.getElementById('sf-subtitle');
+            if (sub) sub.classList.add('sf-visible');
+        }, headingDuration);
+
+        // Step 3 — Pop skill cards from centre, staggered
+        const cardsStart = headingDuration + 400;
+        const cards = section.querySelectorAll('.sf-card');
+        const CARD_STAGGER = 80;
+        cards.forEach((card, i) => {
+            setTimeout(() => {
+                card.classList.add('sf-card-visible');
+                // Start float animation after reveal transition completes (~450ms)
+                setTimeout(() => card.classList.add('sf-card-float'), 450);
+            }, cardsStart + i * CARD_STAGGER);
+        });
+
+        // Step 4 — Word-by-word tagline after all cards
+        const taglineStart = cardsStart + cards.length * CARD_STAGGER + 400;
+        const words = section.querySelectorAll('.sf-word');
+        const WORD_STAGGER = 130;
+        words.forEach((word, i) => {
+            setTimeout(() => word.classList.add('visible'), taglineStart + i * WORD_STAGGER);
+        });
+    };
+
+    // ── 6. IntersectionObserver ──────────────────────────────
+    const sfObserver = new IntersectionObserver(
+        (entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    runSkillFlowSequence();
+                    sfObserver.disconnect(); // run once
+                }
+            });
+        },
+        { threshold: 0.15 }
+    );
+    sfObserver.observe(section);
+};
+
 // ── Bootstrap ─────────────────────────────────────────────────
 const boot = () => {
     initTypewriter();
     init3DLines();
+    initSkillFlow();
 };
 
 if (document.readyState === 'loading') {

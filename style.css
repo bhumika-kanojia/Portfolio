@@ -978,37 +978,390 @@ body:not(.dark-mode) .avc-glow {
     background: linear-gradient(to bottom, transparent, rgba(177,156,217,0.45) 30%, rgba(177,156,217,0.6) 70%, transparent);
 }
 
-/* ── Skills Section ─────────────────────────────────────────────── */
-.skills-container {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 2rem;
-    margin-top: 3rem;
+/* ══════════════════════════════════════════════════════════════
+   SKILL FLOW SECTION
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Section wrapper ── */
+.skill-flow-section {
+    position: relative;
+    overflow: hidden;
+    padding: 8rem 5% 6rem;
+    text-align: center;
+    min-height: auto;
 }
-.skill-box {
+
+/* ── Section-scoped ambient blobs ── */
+.sf-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0;                    /* start invisible; JS reveals them */
+    pointer-events: none;
+    z-index: 0;
+    animation: sfBlobFloat 12s ease-in-out infinite alternate;
+    transition: opacity 1.2s ease;
+}
+.sf-blob.sf-blob-visible { opacity: 0.55; }
+
+.sf-blob-1 {
+    width: 380px; height: 380px;
+    background: var(--blob-1);
+    top: -12%; left: -8%;
+    animation-delay: 0s;
+}
+.sf-blob-2 {
+    width: 280px; height: 280px;
+    background: var(--blob-2);
+    bottom: 5%; right: -5%;
+    animation-delay: 4s;
+    animation-direction: alternate-reverse;
+}
+.sf-blob-3 {
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, #B19CD9 0%, transparent 70%);
+    top: 40%; left: 50%;
+    transform: translateX(-50%);
+    animation-delay: 2s;
+}
+@keyframes sfBlobFloat {
+    0%   { transform: translateY(0)   scale(1); }
+    100% { transform: translateY(28px) scale(1.1); }
+}
+
+/* ── Heading ── */
+.sf-heading {
+    position: relative;
+    z-index: 2;
+    font-family: var(--font-heading);
+    font-size: 4.8rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 1.6rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0;
+    letter-spacing: 0.02em;
+}
+
+/* Each letter span injected by JS */
+.sf-letter {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(18px) scale(0.85);
+    filter: blur(4px);
+    transition: opacity 0.38s cubic-bezier(0.34, 1.56, 0.64, 1),
+                transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1),
+                filter 0.3s ease;
+}
+.sf-letter.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+}
+/* Colour the gradient words */
+.sf-letter.colored {
+    background: linear-gradient(135deg, var(--main-color), #B19CD9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+/* Space character */
+.sf-space {
+    display: inline-block;
+    width: 0.35em;
+}
+
+/* ── Subtitle ── */
+.sf-subtitle {
+    position: relative;
+    z-index: 2;
+    font-size: 1.7rem;
+    color: var(--text-color);
+    opacity: 0;
+    max-width: 680px;
+    margin: 0 auto 3rem;
+    line-height: 1.8;
+    transition: opacity 0.8s ease 0.1s;
+}
+.sf-subtitle.sf-visible { opacity: 0.75; }
+
+/* ── Journey wrap — card container ── */
+.sf-journey-wrap {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 4rem;
+}
+
+/* ── Cards grid — two equal rows ── */
+.sf-cards-grid {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    pointer-events: all;
+}
+
+.sf-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.4rem;
+    padding: 0 2%;
+}
+
+.sf-row-top {
+    margin-bottom: 0;
+}
+
+.sf-row-bottom {
+    margin-top: 0;
+}
+
+/* ── Individual skill card ── */
+.sf-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1.6rem 1.8rem 1.4rem;
+    border-radius: 20px;
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1.5px solid var(--card-border);
+    box-shadow: var(--shadow);
+    min-width: 9rem;
+    cursor: default;
+
+    /* Start invisible at centre (scale 0); JS reveals them */
+    opacity: 0;
+    transform: scale(0);
+    transition: opacity 0.45s ease,
+                transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+                border-color 0.3s ease,
+                box-shadow 0.3s ease;
+}
+
+/* Revealed state — JS adds .sf-card-visible */
+.sf-card.sf-card-visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Float animation only starts after card is fully revealed
+   JS adds .sf-card-float ~600ms after .sf-card-visible */
+.sf-card.sf-card-float {
+    animation: sfCardFloat 5s ease-in-out infinite;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Each card gets a slightly different float phase */
+.sf-card:nth-child(odd)  { animation-delay: 0s;    }
+.sf-card:nth-child(even) { animation-delay: 1.5s;  }
+.sf-card:nth-child(3n)   { animation-delay: 0.8s;  }
+.sf-card:nth-child(4n)   { animation-delay: 2.2s;  }
+
+@keyframes sfCardFloat {
+    0%, 100% { transform: translateY(0);    }
+    50%       { transform: translateY(-8px); }
+}
+
+/* Hover: lift + icon zoom + glow border */
+.sf-card:hover {
+    transform: translateY(-10px) scale(1.06) !important;
+    border-color: var(--main-color);
+    box-shadow: 0 12px 36px rgba(255,182,193,0.35),
+                0 0 0 2px rgba(255,182,193,0.25);
+}
+.sf-card:hover .sf-card-icon i {
+    transform: scale(1.25);
+    filter: drop-shadow(0 0 8px var(--main-color));
+}
+
+/* Card icon wrapper */
+.sf-card-icon {
+    width: 4.8rem; height: 4.8rem;
+    border-radius: 14px;
+    background: linear-gradient(135deg,
+        rgba(255,182,193,0.25) 0%,
+        rgba(177,156,217,0.2) 100%);
+    border: 1px solid rgba(255,182,193,0.3);
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 1.5rem 3rem;
-    background: var(--card-bg);
-    backdrop-filter: blur(10px);
-    border-radius: 3rem;
-    font-size: 1.8rem;
-    font-weight: 600;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--card-border);
-    transition: 0.3s;
+    justify-content: center;
+    transition: background 0.3s ease;
 }
-.skill-box:hover {
-    transform: translateY(-5px) scale(1.05);
-    background: var(--main-color);
-    color: #fff;
+.sf-card-icon i {
+    font-size: 2.6rem;
+    color: var(--main-color);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+                filter 0.35s ease;
 }
-.skill-box i { font-size: 2.5rem; color: var(--main-color); }
-.skill-box:hover i { color: #fff; }
 
-/* ── Projects Section ─────────────────────────────────────────────── */
+/* Card label */
+.sf-card span {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-color);
+    font-family: var(--font-heading);
+    line-height: 1.2;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* ── Highlighted / key skills — slightly bigger with glowing border ── */
+.sf-card[data-skill="java"],
+.sf-card[data-skill="dsa"],
+.sf-card[data-skill="js"],
+.sf-card[data-skill="react"],
+.sf-card[data-skill="nodejs"],
+.sf-card[data-skill="mongodb"],
+.sf-card[data-skill="sql"],
+.sf-card[data-skill="github"] {
+    padding: 2rem 2.2rem 1.8rem;
+    border-color: rgba(255,182,193,0.6);
+    box-shadow: var(--shadow), 0 0 18px rgba(255,182,193,0.2);
+}
+.sf-card[data-skill="java"] .sf-card-icon,
+.sf-card[data-skill="dsa"] .sf-card-icon,
+.sf-card[data-skill="js"] .sf-card-icon,
+.sf-card[data-skill="react"] .sf-card-icon,
+.sf-card[data-skill="nodejs"] .sf-card-icon,
+.sf-card[data-skill="mongodb"] .sf-card-icon,
+.sf-card[data-skill="sql"] .sf-card-icon,
+.sf-card[data-skill="github"] .sf-card-icon {
+    width: 5.4rem; height: 5.4rem;
+}
+.sf-card[data-skill="java"] .sf-card-icon i,
+.sf-card[data-skill="dsa"] .sf-card-icon i,
+.sf-card[data-skill="js"] .sf-card-icon i,
+.sf-card[data-skill="react"] .sf-card-icon i,
+.sf-card[data-skill="nodejs"] .sf-card-icon i,
+.sf-card[data-skill="mongodb"] .sf-card-icon i,
+.sf-card[data-skill="sql"] .sf-card-icon i,
+.sf-card[data-skill="github"] .sf-card-icon i {
+    font-size: 3rem;
+}
+.sf-card[data-skill="java"] span,
+.sf-card[data-skill="dsa"] span,
+.sf-card[data-skill="js"] span,
+.sf-card[data-skill="react"] span,
+.sf-card[data-skill="nodejs"] span,
+.sf-card[data-skill="mongodb"] span,
+.sf-card[data-skill="sql"] span,
+.sf-card[data-skill="github"] span {
+    font-size: 1.5rem;
+}
+
+/* ── Bottom tagline ── */
+.sf-tagline {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 1.7rem;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--text-color);
+    opacity: 0.8;
+    margin-top: 3rem;
+    padding: 0 5%;
+}
+
+/* Each word span from JS */
+.sf-word {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.sf-word.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+/* Highlighted words (the "action" words) */
+.sf-word.sf-word-accent {
+    color: var(--main-color);
+}
+
+/* ── Dark mode overrides for Skill Flow ── */
+.dark-mode .sf-card[data-skill="java"],
+.dark-mode .sf-card[data-skill="dsa"],
+.dark-mode .sf-card[data-skill="js"],
+.dark-mode .sf-card[data-skill="react"],
+.dark-mode .sf-card[data-skill="nodejs"],
+.dark-mode .sf-card[data-skill="mongodb"],
+.dark-mode .sf-card[data-skill="sql"],
+.dark-mode .sf-card[data-skill="github"] {
+    border-color: rgba(177,156,217,0.55);
+    box-shadow: var(--shadow), 0 0 18px rgba(177,156,217,0.2);
+}
+.dark-mode .sf-card-icon {
+    background: linear-gradient(135deg,
+        rgba(177,156,217,0.2) 0%,
+        rgba(45,27,54,0.3) 100%);
+    border-color: rgba(177,156,217,0.35);
+}
+.dark-mode #sf-path-glow {
+    stroke: rgba(177,156,217,0.4);
+}
+
+/* ── Responsive: tablet ── */
+@media (max-width: 900px) {
+    .sf-heading    { font-size: 3.8rem; }
+}
+
+/* ── Responsive: mobile ── */
+@media (max-width: 768px) {
+    .skill-flow-section { padding: 7rem 4% 4rem; }
+    .sf-heading         { font-size: 3.2rem; }
+    .sf-subtitle        { font-size: 1.5rem; }
+
+    .sf-row {
+        gap: 1rem;
+    }
+    .sf-card {
+        min-width: 7.5rem;
+        padding: 1.2rem 1rem;
+    }
+    .sf-card-icon         { width: 4rem; height: 4rem; }
+    .sf-card-icon i       { font-size: 2.2rem; }
+    .sf-card span         { font-size: 1.15rem; white-space: normal; }
+
+    /* Key cards same as normal on mobile */
+    .sf-card[data-skill="java"],
+    .sf-card[data-skill="dsa"],
+    .sf-card[data-skill="js"],
+    .sf-card[data-skill="react"],
+    .sf-card[data-skill="nodejs"],
+    .sf-card[data-skill="mongodb"],
+    .sf-card[data-skill="sql"],
+    .sf-card[data-skill="github"] {
+        padding: 1.4rem 1.2rem;
+    }
+    .sf-card[data-skill="java"] .sf-card-icon,
+    .sf-card[data-skill="dsa"] .sf-card-icon,
+    .sf-card[data-skill="js"] .sf-card-icon,
+    .sf-card[data-skill="react"] .sf-card-icon,
+    .sf-card[data-skill="nodejs"] .sf-card-icon,
+    .sf-card[data-skill="mongodb"] .sf-card-icon,
+    .sf-card[data-skill="sql"] .sf-card-icon,
+    .sf-card[data-skill="github"] .sf-card-icon {
+        width: 4.4rem; height: 4.4rem;
+    }
+
+    .sf-tagline { font-size: 1.4rem; margin-top: 2rem; }
+}
+
+
 #projects {
     padding: 7rem 9% 2rem;
 }

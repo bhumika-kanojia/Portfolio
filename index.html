@@ -149,19 +149,119 @@
         </div>
     </section>
 
-    <!-- Skills Section -->
-    <section class="skills" id="skills">
-        <h2 class="heading">My <span>Skills</span> ✨</h2>
-        <div class="skills-container">
-            <div class="skill-box"><i class='bx bxl-html5'></i> <span>HTML5</span></div>
-            <div class="skill-box"><i class='bx bxl-css3'></i> <span>CSS3</span></div>
-            <div class="skill-box"><i class='bx bxl-javascript'></i> <span>JavaScript</span></div>
-            <div class="skill-box"><i class='bx bxl-react'></i> <span>React.js</span></div>
-            <div class="skill-box"><i class='bx bxl-python'></i> <span>Python</span></div>
-            <div class="skill-box"><i class='bx bx-data'></i> <span>SQL</span></div>
-            <div class="skill-box"><i class='bx bx-brain'></i> <span>AI / ML</span></div>
-            <div class="skill-box"><i class='bx bxl-git'></i> <span>Git</span></div>
-        </div>
+    <!-- Skills Section — Skill Flow -->
+    <section class="skills skill-flow-section" id="skills">
+
+        <!-- Ambient blobs specific to this section -->
+        <div class="sf-blob sf-blob-1"></div>
+        <div class="sf-blob sf-blob-2"></div>
+        <div class="sf-blob sf-blob-3"></div>
+
+        <!-- Heading — each letter gets its own span for the reveal -->
+        <h2 class="sf-heading" id="sf-heading" aria-label="My Tech Stack ✨">
+            <!-- Letters injected by JS -->
+        </h2>
+
+        <!-- Subtitle -->
+        <p class="sf-subtitle" id="sf-subtitle">
+            Skills and technologies I use to build responsive, scalable and real-world web applications.
+        </p>
+
+        <!-- Cards grid area -->
+        <div class="sf-journey-wrap" id="sf-journey-wrap">
+
+            <!-- Skill cards grid -->
+            <div class="sf-cards-grid" id="sf-cards-grid">
+
+                <!-- Row 1 — 9 cards -->
+                <div class="sf-row sf-row-top">
+                    <div class="sf-card" data-skill="html5">
+                        <div class="sf-card-icon"><i class='bx bxl-html5'></i></div>
+                        <span>HTML5</span>
+                    </div>
+                    <div class="sf-card" data-skill="js">
+                        <div class="sf-card-icon"><i class='bx bxl-javascript'></i></div>
+                        <span>JavaScript</span>
+                    </div>
+                    <div class="sf-card" data-skill="react">
+                        <div class="sf-card-icon"><i class='bx bxl-react'></i></div>
+                        <span>React.js</span>
+                    </div>
+                    <div class="sf-card" data-skill="nodejs">
+                        <div class="sf-card-icon"><i class='bx bxl-nodejs'></i></div>
+                        <span>Node.js</span>
+                    </div>
+                    <div class="sf-card" data-skill="mongodb">
+                        <div class="sf-card-icon"><i class='bx bx-data'></i></div>
+                        <span>MongoDB</span>
+                    </div>
+                    <div class="sf-card" data-skill="java">
+                        <div class="sf-card-icon"><i class='bx bxl-java'></i></div>
+                        <span>Java</span>
+                    </div>
+                    <div class="sf-card" data-skill="dsa">
+                        <div class="sf-card-icon"><i class='bx bx-code-curly'></i></div>
+                        <span>DSA</span>
+                    </div>
+                    <div class="sf-card" data-skill="git">
+                        <div class="sf-card-icon"><i class='bx bxl-git'></i></div>
+                        <span>Git</span>
+                    </div>
+                    <div class="sf-card" data-skill="postman">
+                        <div class="sf-card-icon"><i class='bx bx-send'></i></div>
+                        <span>Postman</span>
+                    </div>
+                </div>
+
+                <!-- Row 2 — 9 cards -->
+                <div class="sf-row sf-row-bottom">
+                    <div class="sf-card" data-skill="css3">
+                        <div class="sf-card-icon"><i class='bx bxl-css3'></i></div>
+                        <span>CSS3</span>
+                    </div>
+                    <div class="sf-card" data-skill="tailwind">
+                        <div class="sf-card-icon"><i class='bx bxl-tailwind-css'></i></div>
+                        <span>Tailwind CSS</span>
+                    </div>
+                    <div class="sf-card" data-skill="express">
+                        <div class="sf-card-icon"><i class='bx bx-server'></i></div>
+                        <span>Express.js</span>
+                    </div>
+                    <div class="sf-card" data-skill="restapi">
+                        <div class="sf-card-icon"><i class='bx bx-transfer'></i></div>
+                        <span>REST APIs</span>
+                    </div>
+                    <div class="sf-card" data-skill="sql">
+                        <div class="sf-card-icon"><i class='bx bx-table'></i></div>
+                        <span>SQL/MySQL</span>
+                    </div>
+                    <div class="sf-card" data-skill="oop">
+                        <div class="sf-card-icon"><i class='bx bx-cube-alt'></i></div>
+                        <span>OOP</span>
+                    </div>
+                    <div class="sf-card" data-skill="dbms">
+                        <div class="sf-card-icon"><i class='bx bx-cylinder'></i></div>
+                        <span>DBMS</span>
+                    </div>
+                    <div class="sf-card" data-skill="github">
+                        <div class="sf-card-icon"><i class='bx bxl-github'></i></div>
+                        <span>GitHub</span>
+                    </div>
+                    <div class="sf-card" data-skill="python">
+                        <div class="sf-card-icon"><i class='bx bxl-python'></i></div>
+                        <span>Python</span>
+                    </div>
+                </div>
+
+            </div><!-- /sf-cards-grid -->
+
+        </div><!-- /sf-journey-wrap -->
+
+        <!-- Bottom tagline — each word gets its own span -->
+        <p class="sf-tagline" id="sf-tagline" aria-label="Building UI. Writing logic. Managing data. Solving problems. Deploying projects.">
+            <!-- Words injected by JS -->
+        </p>
+
     </section>
 
     <!-- Projects Section -->
